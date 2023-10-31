@@ -25,7 +25,7 @@ def apps_urls():
     for i in CUSTOM_APPS:
         try:
             _app = __import__(f"{i}.urls")
-            print(_app.urls.SLUG)
+            # print(_app.urls.SLUG)
             _urls.append(path(f"{_app.urls.SLUG}/", include(f"{i}.urls")))
         except ImportError as error:
             print(
