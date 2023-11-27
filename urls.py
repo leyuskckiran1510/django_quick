@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from core.settings import CUSTOM_APPS
+from .settings import CUSTOM_APPS
 from django.http import HttpResponseForbidden
 
 
@@ -25,7 +25,7 @@ def apps_urls():
     for i in CUSTOM_APPS:
         try:
             _app = __import__(f"{i}.urls")
-            # print(_app.urls.SLUG)
+            _urls.append(path(f"{_app.urls.SLUG}", include(f"{i}.urls")))
             _urls.append(path(f"{_app.urls.SLUG}/", include(f"{i}.urls")))
         except ImportError as error:
             print(
@@ -40,10 +40,10 @@ def fOf(*_):
     return HttpResponseForbidden(b"The Url Is not Valid")
 
 
-DJANGOS_URLS = [path("admin/", admin.site.urls)]
 FEATURE_URLS = []
-CUSTOM_APPS_URLS = apps_urls()
 STATIC_URLS = []
+CUSTOM_APPS_URLS = apps_urls()
+DJANGOS_URLS = [path("admin/", admin.site.urls)]
 FOUR_O_FOUR = [re_path("[^/]*", fOf)]
 
 urlpatterns = DJANGOS_URLS + FEATURE_URLS + CUSTOM_APPS_URLS + STATIC_URLS + FOUR_O_FOUR

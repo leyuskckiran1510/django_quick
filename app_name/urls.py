@@ -1,26 +1,32 @@
 from django.urls import path
 from . import views
+from django.views import View
 
-SLUG = "org"
+SLUG = "test"  # app_slug_name
 
 
 def _path(*args, name=None):
     return path(*args, name=f"{SLUG}_{name}")
 
 
+def check_slug(cls, key) -> str:
+    res = cls.__dict__.get(key)
+    if res:
+        return res
+    else:
+        raise ValueError(f"__slug__ is not provided for the view class [{cls}]\n")
+
+
 def view_from_class():
-    # Ignored for some issues 'options',
-    methods = {"get", "post", "put", "patch", "delete", "head", "trace"}
     paths = []
     for cls in views.__dict__.values():
-        if isinstance(cls, type):
-            cls_keys = set(cls.__dict__.keys())
-            if methods.intersection(cls_keys):
+        if isinstance(cls, type) and issubclass(cls, View) and View != cls:
+            if issubclass(cls, View):
                 paths.append(
                     _path(
-                        cls.__dict__.get("__slug__"),
-                        cls.as_view(),  # type:ignore
-                        name=cls.__dict__.get("__name__"),
+                        check_slug(cls, "__slug__"),
+                        cls.as_view(),
+                        name=cls.__dict__.get("__name__", cls.__dict__.get("__slug__")),
                     )
                 )
     return paths
