@@ -9,8 +9,28 @@ django-admin startproject project_name
 2. ## Now Modify your `project_name/project_name/settings.py` as
 - automatically tries to render the file provided here; incase of filenotfound
 ```py
+import os
+```
+```py
 FILE404HTML=""
 #FILE404HTML = "404.html"
+```
+- make this minor change to `TEMPLATES` to allow loading `404.html` from root directory(path of `manage.py`) 
+```diff
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
++        "DIRS": ["."],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
 ```
 - dynamically add app to your installed app list, if the app names ends with `_app`
     - if you like to modify that, change the `auto_install_app(your_suffix)`
